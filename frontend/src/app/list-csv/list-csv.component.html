@@ -1,0 +1,6 @@
+<h2>List of Uploaded CSV Files</h2>
+<ul>
+  <li *ngFor="let file of files">
+    <a [routerLink]="['/preview', file.id]">{{ file.filename }} - Uploaded on: {{ file.uploaded_at | date:'M/d/yy, h:mm a' }}</a>
+  </li>
+</ul>

@@ -29,10 +29,36 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
 # Application definition
 INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.staticfiles',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'rest_framework',
+    'drf_yasg',
+    'corsheaders',
+    'csvapp',
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+APPEND_SLASH = False
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:4200',
 ]
 
 ROOT_URLCONF = 'transformer.urls'
@@ -41,38 +67,44 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR.parent / 'frontend' / 'dist'
+            BASE_DIR.parent / 'frontend' / 'dist',
         ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',  # Add this line
+                'django.contrib.messages.context_processors.messages',  # Required for messages
             ],
         },
     },
 ]
 
+
 WSGI_APPLICATION = 'transformer.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-DATABASE_HOST = os.environ['DATABASE_HOST']
-DATABASE_USER = os.environ['DATABASE_USER']
-DATABASE_NAME = os.environ['DATABASE_NAME']
+# Database configuration with default values for local development
+DATABASE_HOST = os.environ.get('DATABASE_HOST', 'localhost')
+DATABASE_USER = os.environ.get('DATABASE_USER', 'postgres')
+DATABASE_NAME = os.environ.get('DATABASE_NAME', 'transformer')
+DATABASE_PASSWORD = os.environ.get('DATABASE_PASSWORD', 'password')
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': DATABASE_NAME,
-        'HOST': DATABASE_HOST,
         'USER': DATABASE_USER,
+        'PASSWORD': DATABASE_PASSWORD,
+        'HOST': DATABASE_HOST,
         'PORT': '5432',
         'TEST': {
             'NAME': f'{DATABASE_NAME}_test',
         },
     }
 }
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -91,9 +123,15 @@ STATICFILES_DIRS = [
     BASE_DIR.parent / 'frontend' / 'dist' / 'static'
 ]
 
+TEMPLATES[0]['DIRS'] = [BASE_DIR.parent / 'frontend' / 'dist']
 
-# Celery
-BROKER_URL = os.environ['BROKER_URL']
+# Media files (for file uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+# Celery configuration
+BROKER_URL = os.environ.get('BROKER_URL', 'redis://localhost:6379')
 CELERY_BROKER_URL = f'{BROKER_URL}/0'
 CELERY_RESULT_BACKEND = f'{BROKER_URL}/1'
 CELERY_WORKER_CONCURRENCY = 1
