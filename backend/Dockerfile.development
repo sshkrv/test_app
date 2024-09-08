@@ -2,14 +2,29 @@ FROM python:3.9-slim
 
 RUN adduser --disabled-password --gecos '' user
 COPY ./requirements*.txt /home/user/
-RUN apt-get update && apt-get install -y postgresql openssl gcc libpq-dev
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    openssl \
+    gcc \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*  # Clean up
+
+# Install python dependencies
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r /home/user/requirements-development.txt
 
+# Expose port 8000 for Django
 EXPOSE 8000
+
+# Set user and working directory
 USER user
 WORKDIR /home/user/backend
+
+# Set environment variables
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=True
-CMD python ./manage.py migrate \
-    && python ./manage.py runserver --insecure 0.0.0.0:8000
+    PYTHONDONTWRITEBYTECODE=1
+
+# Command to run Django's development server
+CMD python manage.py migrate \
+    && python manage.py runserver --insecure 0.0.0.0:8000
