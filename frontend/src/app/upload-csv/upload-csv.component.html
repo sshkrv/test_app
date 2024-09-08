@@ -1,4 +1,11 @@
-<div>
-  <input type="file" (change)="onFileSelected($event)" />
-  <button (click)="uploadCsv()">Upload</button>
+<h2>Upload CSV File</h2>
+
+<input type="file" (change)="onFileSelected($event)" />
+
+<button (click)="uploadCsv()">Upload CSV</button>
+
+<div *ngIf="successMessage" class="success">
+  <p>{{ successMessage }}</p>
+  <a *ngIf="uploadedFileId" [routerLink]="['/preview', uploadedFileId]">Preview: {{ uploadedFileName }}</a>
 </div>
+<div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>

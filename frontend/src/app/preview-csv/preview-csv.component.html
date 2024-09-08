@@ -1,0 +1,20 @@
+<h2>Preview of: {{ fileName }}</h2>
+
+<div *ngIf="csvData && csvData.length > 0">
+  <table border="1">
+    <thead>
+      <tr>
+        <th *ngFor="let header of csvData[0]">{{ header }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of csvData.slice(1)">
+        <td *ngFor="let cell of row">{{ cell }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="!csvData || csvData.length === 0">
+  <p>No content to display.</p>
+</div>

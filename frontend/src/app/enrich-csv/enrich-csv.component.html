@@ -1,0 +1,34 @@
+<h2>Enrich CSV File</h2>
+
+<!-- Enrichment Form -->
+<form [formGroup]="form" (ngSubmit)="enrichCsv()">
+  <div>
+    <label for="apiUrl">API URL:</label>
+    <input id="apiUrl" formControlName="apiUrl" placeholder="Enter API URL" />
+  </div>
+
+  <div>
+    <label for="csvKey">CSV Key Column:</label>
+    <select formControlName="csvKey" class="form-control" required>
+      <option *ngFor="let column of csvColumns" [value]="column">{{ column }}</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="apiKey">API Key:</label>
+    <input id="apiKey" formControlName="apiKey" placeholder="Enter API Key" />
+  </div>
+
+  <button type="submit" [disabled]="isLoading">Enrich CSV</button>
+</form>
+
+<!-- Success Message -->
+<div *ngIf="enrichmentMessage" class="success">
+  <p>{{ enrichmentMessage }}</p>
+  <a *ngIf="enrichedFileId" [routerLink]="['/preview', enrichedFileId]">{{ enrichedFileName }}</a>
+</div>
+
+<!-- Error Message -->
+<div *ngIf="errorMessage" class="error">
+  <p>{{ errorMessage }}</p>
+</div>
